@@ -12,7 +12,9 @@ namespace AddressBook_MultiThreading
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            AddressBookRepository repository = new AddressBookRepository();
+            //UC 16
+            repository.RetrieveAllContactDetails();
         }
     }
 }
