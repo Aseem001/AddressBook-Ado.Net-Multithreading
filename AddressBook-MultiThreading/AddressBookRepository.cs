@@ -41,11 +41,12 @@ namespace AddressBook_MultiThreading
                             model.Address = reader.GetString(2);
                             model.PhoneNumber = reader.GetInt64(3);
                             model.Email = reader.GetString(4);
-                            model.City = reader.GetString(5);
-                            model.State = reader.GetString(6);
-                            model.Zip = reader.GetInt32(7);
-                            model.ContactType = reader.GetString(8);
-                            model.AddressBookName = reader.GetString(9);
+                            model.DateAdded = reader.GetDateTime(5);
+                            model.City = reader.GetString(6);
+                            model.State = reader.GetString(7);
+                            model.Zip = reader.GetInt32(8);
+                            model.ContactType = reader.GetString(9);
+                            model.AddressBookName = reader.GetString(10);
                             Console.WriteLine($"First Name: {model.FirstName}\nLast Name: {model.LastName}\nAddress: {model.Address}\nCity: {model.City}\nState: {model.State}\nZip: {model.Zip}\nPhone Number: {model.PhoneNumber}\nEmail: {model.Email}\nContact Type: {model.ContactType}\nAddress Book Name : {model.AddressBookName}");
                             Console.WriteLine("\n");
                         }
@@ -165,6 +166,56 @@ namespace AddressBook_MultiThreading
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+            finally
+            {
+                if (connection.State.Equals("Open"))
+                    connection.Close();
+            }
+        }
+
+        /// <summary>
+        /// UC 20 : Adds the contact details in database in all corresponding tables.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        public bool AddContactDetailsIntoDataBase(AddressBookModel model)
+        {
+            DBConnection dbc = new DBConnection();
+            connection = dbc.GetConnection();
+            try
+            {
+                using (connection)
+                {
+                    SqlCommand command = new SqlCommand();
+                    command.CommandText = "dbo.spAddContactIntoMultipleTables";
+                    command.Connection = connection;
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@firstname", model.FirstName);
+                    command.Parameters.AddWithValue("@lastname", model.LastName);
+                    command.Parameters.AddWithValue("@address", model.Address);
+                    command.Parameters.AddWithValue("@city", model.City);
+                    command.Parameters.AddWithValue("@state", model.State);
+                    command.Parameters.AddWithValue("@zip", model.Zip);
+                    command.Parameters.AddWithValue("@phonenumber", model.PhoneNumber);
+                    command.Parameters.AddWithValue("@email", model.Email);
+                    command.Parameters.AddWithValue("@dateadded", model.DateAdded);
+                    command.Parameters.AddWithValue("@contacttype", model.ContactType);
+                    command.Parameters.AddWithValue("@typecode", model.TypeCode);
+                    command.Parameters.AddWithValue("@addressbookname", model.AddressBookName);
+                    connection.Open();
+                    int result = command.ExecuteNonQuery();
+                    if (result != 0)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
             }
             finally
             {

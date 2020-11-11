@@ -23,5 +23,6 @@ namespace AddressBook_MultiThreading
         public string ContactType { get; set; }
         public string AddressBookName { get; set; }
         public DateTime DateAdded { get; set; }
+        public string TypeCode { get; set; }
     }
 }
