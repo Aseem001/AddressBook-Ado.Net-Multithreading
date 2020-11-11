@@ -15,6 +15,10 @@ namespace AddressBook_MultiThreading
     {
         public static SqlConnection connection { get; set; }
 
+        /// <summary>
+        /// UC 16 : Retrieves all contact details.
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public void RetrieveAllContactDetails()
         {
             //Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
@@ -51,6 +55,46 @@ namespace AddressBook_MultiThreading
                         Console.WriteLine("No data found");
                     }
                     reader.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                if (connection.State.Equals("Open"))
+                    connection.Close();
+            }
+        }
+
+        /// <summary>
+        /// UC 17 : Updates the column specified of the existing contact using name.
+        /// </summary>
+        /// <param name="firstName">The first name.</param>
+        /// <param name="lastName">The last name.</param>
+        /// <param name="column">The column.</param>
+        /// <param name="newValue">The new value.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool UpdateExistingContactUsingName(string firstName, string lastName, string column,string newValue)
+        {
+            DBConnection dbc = new DBConnection();
+            connection = dbc.GetConnection();
+            try
+            {
+                using (connection)
+                {
+                    connection.Open();
+                    string query = $@"update dbo.contact set {column}='{newValue}' where FirstName='{firstName}' and LastName='{lastName}'";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    var result = command.ExecuteNonQuery();
+                    connection.Close();
+                    if (result > 0)
+                    {
+                        return true;
+                    }
+                    return false;
                 }
             }
             catch (Exception ex)
