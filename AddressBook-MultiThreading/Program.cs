@@ -19,6 +19,8 @@ namespace AddressBook_MultiThreading
             Console.WriteLine(repository.UpdateExistingContactUsingName("Rahul", "Kumar", "Email", "rahul12345@gmail.com")?"Update done":"Update Failed");
             //UC 18
             repository.GetContactsAddedInPeriod("2018-01-01","2020-01-01");
+            //UC 19
+            repository.GetNumberOfContactsByCityOrState();
         }
     }
 }
