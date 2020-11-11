@@ -9,7 +9,9 @@ namespace AddressBook_MultiThreading
     using System;
     using System.Collections.Generic;
     using System.Data.SqlClient;
+    using System.Diagnostics;
     using System.Text;
+    using System.Threading;
 
     public class AddressBookRepository
     {
@@ -184,7 +186,7 @@ namespace AddressBook_MultiThreading
             DBConnection dbc = new DBConnection();
             connection = dbc.GetConnection();
             try
-            {
+            {             
                 using (connection)
                 {
                     SqlCommand command = new SqlCommand();
@@ -204,8 +206,8 @@ namespace AddressBook_MultiThreading
                     command.Parameters.AddWithValue("@typecode", model.TypeCode);
                     command.Parameters.AddWithValue("@addressbookname", model.AddressBookName);
                     connection.Open();
-                    int result = command.ExecuteNonQuery();
-                    if (result != 0)
+                    int result = command.ExecuteNonQuery();                 
+                    if (result > 0)
                     {
                         return true;
                     }
@@ -236,7 +238,7 @@ namespace AddressBook_MultiThreading
             connection = dbc.GetConnection();
             AddressBookModel model = new AddressBookModel();
             try
-            {
+            {                
                 using (connection)
                 {
                     SqlCommand command = new SqlCommand(query, connection);
@@ -277,6 +279,31 @@ namespace AddressBook_MultiThreading
                 if (connection.State.Equals("Open"))
                     connection.Close();
             }
+        }
+
+        /// <summary>
+        /// UC 21 : Adds the multiple contacts int the List using thread.
+        /// </summary>
+        /// <param name="contactList">The contact list.</param>
+        public void AddMultipleContactsUsingThread(List<AddressBookModel> contactList)
+        {            
+            Stopwatch s = new Stopwatch();
+            s.Start();
+            foreach (var contact in contactList)
+            {
+                // Using thread to add each contact present in the list
+                Thread th = new Thread(() =>
+                  {
+                      Console.WriteLine("Thread id: " + Thread.CurrentThread.ManagedThreadId);
+                      Console.WriteLine($"Contact being added:{contact.FirstName} {contact.LastName}");
+                      AddContactDetailsIntoDataBase(contact);
+                      Console.WriteLine(AddContactDetailsIntoDataBase(contact)?$"Contact added:{contact.FirstName} {contact.LastName}":"Addition Failed");
+                  });
+                th.Start();               
+                th.Join();
+            }
+            s.Stop();
+            Console.WriteLine("Elapsed time to add contacts:" + s.ElapsedMilliseconds);
         }
     }
 }

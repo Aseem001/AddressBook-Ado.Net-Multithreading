@@ -7,6 +7,7 @@
 namespace AddressBook_MultiThreading
 {
     using System;
+    using System.Collections.Generic;
 
     class Program
     {
@@ -36,6 +37,37 @@ namespace AddressBook_MultiThreading
             contactDetails.ContactType = "CRICKETER";
             contactDetails.TypeCode = "CRI";
             Console.WriteLine(repository.AddContactDetailsIntoDataBase(contactDetails) ? "Contact added successfully" : "Contact was not added");
+            //UC 21
+            AddressBookModel contactDetails1 = new AddressBookModel();
+            contactDetails1.FirstName = "Rohit";
+            contactDetails1.LastName = "Sharma";
+            contactDetails1.Address = "Wankhede";
+            contactDetails1.City = "Mumbai";
+            contactDetails1.State = "Maharashtra";
+            contactDetails1.Zip = 654567;
+            contactDetails1.PhoneNumber = 3456453345;
+            contactDetails1.Email = "rs@gmail.com";
+            contactDetails1.DateAdded = Convert.ToDateTime("2019-01-10");
+            contactDetails1.AddressBookName = "B";
+            contactDetails1.ContactType = "B";
+            contactDetails1.TypeCode = "B";
+            AddressBookModel contactDetails2 = new AddressBookModel();
+            contactDetails2.FirstName = "MS";
+            contactDetails2.LastName = "Dhoni";
+            contactDetails2.Address = "Chidambaram";
+            contactDetails2.City = "Chennai";
+            contactDetails2.State = "Tamil Nadu";
+            contactDetails2.Zip = 546765;
+            contactDetails2.PhoneNumber = 2345432345;
+            contactDetails2.Email = "msd@gmail.com";
+            contactDetails2.DateAdded = Convert.ToDateTime("2018-06-10");
+            contactDetails2.AddressBookName = "A";
+            contactDetails2.ContactType = "A";
+            contactDetails2.TypeCode = "A";
+            List<AddressBookModel> contactList = new List<AddressBookModel>();
+            contactList.Add(contactDetails1);
+            contactList.Add(contactDetails2);
+            repository.AddMultipleContactsUsingThread(contactList);
         }
     }
 }
